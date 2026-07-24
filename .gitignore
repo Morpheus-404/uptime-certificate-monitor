@@ -2,6 +2,11 @@
 .venv/
 __pycache__/
 *.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
 
 # IDEs
 .vscode/
@@ -18,4 +23,5 @@ Desktop.ini
 # Linux
 .directory
 
+# Personal notes
 projektplan.txt

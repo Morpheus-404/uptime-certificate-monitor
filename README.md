@@ -2,7 +2,9 @@
 
 A lightweight uptime and SSL certificate monitoring tool built with **Python**, **Docker**, and **Kubernetes**.
 
-The application periodically checks a list of websites, verifies their availability, inspects SSL certificate expiration dates, and reports potential issues. 
+This project is part of my software engineering portfolio. It focuses on clean architecture, modern Python packaging, automated testing, and containerized deployment while solving a practical monitoring problem.
+
+The application periodically checks a list of websites, verifies their availability, inspects SSL certificate expiration dates, and reports potential issues.
 The primary goal of this project is to demonstrate practical DevOps and software engineering skills through a clean, production-inspired architecture.
 
 ---
@@ -40,7 +42,8 @@ The primary goal of this project is to demonstrate practical DevOps and software
 # Project Structure
 
 ```text
-monitor/          Application source code
+src/
+    monitor/          Application source code
 tests/            Unit tests
 ```
 
@@ -55,7 +58,6 @@ This project is intended to demonstrate practical experience with:
 * Automated testing
 * Docker containerization
 * Kubernetes workloads
-* Infrastructure automation
 * Continuous Integration
 * DevOps best practices
 
