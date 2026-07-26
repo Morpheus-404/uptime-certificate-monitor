@@ -1,0 +1,6 @@
+checks:
+  - type: http
+    url: https://example.com
+
+  - type: ssl
+    hostname: example.com
