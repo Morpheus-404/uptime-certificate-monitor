@@ -1,22 +1,22 @@
 from pathlib import Path
 
-from monitor.checks import run_http_check, run_ssl_check
-from monitor.config import HttpCheckConfig, SslCheckConfig, load_config
+from monitor.config import load_config
+from monitor.monitor import run_checks
 
 
-def main() -> None:
+def main() -> int:
     config = load_config(Path("config.yaml"))
 
-    for check in config.checks:
+    results = run_checks(config)
 
-        if isinstance(check, HttpCheckConfig):
-            result = run_http_check(check)
-            print(result)
+    for result in results:
+        print(result.message)
 
-        elif isinstance(check, SslCheckConfig):
-            result = run_ssl_check(check)
-            print(result)
+    if any(not result.success for result in results):
+        return 1
+
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
