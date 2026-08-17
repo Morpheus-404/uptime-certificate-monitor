@@ -1,10 +1,13 @@
 import json
-import pytest
-from urllib.error import HTTPError, URLError
 from unittest.mock import MagicMock, patch
+from urllib.error import HTTPError, URLError
 
-from monitor.checks import CHECK_TIMEOUT_SECONDS, CheckResult
-from monitor.notifier import build_failure_message, send_discord_notification
+from monitor.checks import CheckResult
+from monitor.notifier import (
+    NOTIFICATION_TIMEOUT_SECONDS,
+    build_failure_message,
+    send_discord_notification,
+)
 
 
 def test_build_failure_message_returns_formatted_message() -> None:
@@ -45,7 +48,7 @@ def test_send_discord_notification_sends_post_request() -> None:
         {"content": "Test message"}
     ).encode("utf-8")
     assert (
-        mock_urlopen.call_args.kwargs["timeout"] == CHECK_TIMEOUT_SECONDS
+        mock_urlopen.call_args.kwargs["timeout"] == NOTIFICATION_TIMEOUT_SECONDS
     )
 
 

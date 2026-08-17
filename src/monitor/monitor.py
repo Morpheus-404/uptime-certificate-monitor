@@ -1,4 +1,4 @@
-from monitor.checks import run_http_check, run_ssl_check, CheckResult
+from monitor.checks import CheckResult, run_http_check, run_ssl_check
 from monitor.config import Config, HttpCheckConfig, SslCheckConfig
 
 
@@ -8,9 +8,15 @@ def run_checks(config: Config) -> list[CheckResult]:
 
     for check in config.checks:
         if isinstance(check, HttpCheckConfig):
-            result = run_http_check(check)
+            result = run_http_check(
+                check,
+                config.request_timeout_seconds,
+            )
         elif isinstance(check, SslCheckConfig):
-            result = run_ssl_check(check)
+            result = run_ssl_check(
+                check,
+                config.request_timeout_seconds,
+            )
 
         else:
             raise TypeError(

@@ -1,12 +1,15 @@
 from collections.abc import Generator
 from dataclasses import dataclass
-from datetime import datetime, UTC, timedelta
-from unittest.mock import patch, MagicMock
+from datetime import UTC, datetime, timedelta
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from monitor.checks import CHECK_TIMEOUT_SECONDS, run_ssl_check
+from monitor.checks import run_ssl_check
 from monitor.config import SslCheckConfig
+
+
+TEST_TIMEOUT_SECONDS = 8.5
 
 
 @dataclass
@@ -50,13 +53,14 @@ def ssl_environment() -> Generator[SslTestEnvironment, None, None]:
 
 def assert_ssl_dependencies_called(
     ssl_environment: SslTestEnvironment,
+    timeout: float,
     hostname: str = "example.com",
 ) -> None:
     ssl_environment.mock_create_default_context.assert_called_once_with()
 
     ssl_environment.mock_create_connection.assert_called_once_with(
         (hostname, 443),
-        timeout=CHECK_TIMEOUT_SECONDS,
+        timeout=timeout,
     )
 
     ssl_environment.context.wrap_socket.assert_called_once_with(
@@ -80,13 +84,13 @@ def test_run_ssl_check_returns_success_for_valid_certificate(
         "notAfter": certificate_expiration,
     }
 
-    result = run_ssl_check(config)
+    result = run_ssl_check(config, TEST_TIMEOUT_SECONDS)
 
     assert result.success is True
     assert result.message == (
         "SSL certificate for example.com expires in 30 days"
     )
-    assert_ssl_dependencies_called(ssl_environment)
+    assert_ssl_dependencies_called(ssl_environment, timeout=TEST_TIMEOUT_SECONDS)
 
 
 def test_run_ssl_check_returns_failure_for_expired_certificate(
@@ -102,19 +106,19 @@ def test_run_ssl_check_returns_failure_for_expired_certificate(
         "notAfter": certificate_expiration,
     }
 
-    result = run_ssl_check(config)
+    result = run_ssl_check(config, TEST_TIMEOUT_SECONDS)
 
     assert result.success is False
     assert result.message == (
         "SSL certificate for example.com expired 3 days ago"
     )
-    assert_ssl_dependencies_called(ssl_environment)
+    assert_ssl_dependencies_called(ssl_environment, timeout=TEST_TIMEOUT_SECONDS)
 
 
 def test_run_ssl_check_returns_failure_for_blank_hostname() -> None:
     config = SslCheckConfig(hostname="    ")
 
-    result = run_ssl_check(config)
+    result = run_ssl_check(config, TEST_TIMEOUT_SECONDS)
 
     assert result.success is False
     assert result.message == "SSL check failed: hostname is empty"
@@ -127,7 +131,7 @@ def test_run_ssl_check_returns_failure_for_connection_error() -> None:
         "monitor.checks.socket.create_connection",
         side_effect=OSError("Connection refused"),
     ) as mock_create_connection:
-        result = run_ssl_check(config)
+        result = run_ssl_check(config, TEST_TIMEOUT_SECONDS)
 
     assert result.success is False
     assert result.message == (
@@ -137,7 +141,7 @@ def test_run_ssl_check_returns_failure_for_connection_error() -> None:
 
     mock_create_connection.assert_called_once_with(
         ("example.com", 443),
-        timeout=CHECK_TIMEOUT_SECONDS,
+        timeout=TEST_TIMEOUT_SECONDS,
     )
 
 
@@ -148,14 +152,14 @@ def test_run_ssl_check_returns_failure_for_missing_not_after(
 
     ssl_environment.ssl_socket.getpeercert.return_value = {}
 
-    result = run_ssl_check(config)
+    result = run_ssl_check(config, TEST_TIMEOUT_SECONDS)
 
     assert result.success is False
     assert result.message == (
         "SSL certificate for example.com "
         "is missing the expiration date"
     )
-    assert_ssl_dependencies_called(ssl_environment)
+    assert_ssl_dependencies_called(ssl_environment, timeout=TEST_TIMEOUT_SECONDS)
 
 
 def test_run_ssl_check_returns_failure_for_invalid_expiration_date(
@@ -167,11 +171,11 @@ def test_run_ssl_check_returns_failure_for_invalid_expiration_date(
         "notAfter": "invalid date format",
     }
 
-    result = run_ssl_check(config)
+    result = run_ssl_check(config, TEST_TIMEOUT_SECONDS)
 
     assert result.success is False
     assert result.message == (
         "SSL certificate for example.com "
         "has an invalid expiration date"
     )
-    assert_ssl_dependencies_called(ssl_environment)
+    assert_ssl_dependencies_called(ssl_environment, timeout=TEST_TIMEOUT_SECONDS)

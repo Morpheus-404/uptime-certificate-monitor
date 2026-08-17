@@ -8,8 +8,6 @@ from urllib.error import URLError, HTTPError
 from monitor.config import HttpCheckConfig, SslCheckConfig
 
 
-CHECK_TIMEOUT_SECONDS = 10
-
 
 @dataclass
 class CheckResult:
@@ -17,7 +15,10 @@ class CheckResult:
     message: str
 
 
-def run_http_check(config: HttpCheckConfig) -> CheckResult:
+def run_http_check(
+    config: HttpCheckConfig,
+    request_timeout_seconds: float,
+) -> CheckResult:
     url = config.url.strip()
 
     if not url:
@@ -29,7 +30,7 @@ def run_http_check(config: HttpCheckConfig) -> CheckResult:
     try:
         with urllib.request.urlopen(
             url,
-            timeout=CHECK_TIMEOUT_SECONDS,
+            timeout=request_timeout_seconds,
         ) as response:
             status = response.status
 
@@ -59,7 +60,10 @@ def run_http_check(config: HttpCheckConfig) -> CheckResult:
         )
 
 
-def run_ssl_check(config: SslCheckConfig) -> CheckResult:
+def run_ssl_check(
+    config: SslCheckConfig,
+    request_timeout_seconds: float,
+) -> CheckResult:
     hostname = config.hostname.strip()
 
     if not hostname:
@@ -73,7 +77,7 @@ def run_ssl_check(config: SslCheckConfig) -> CheckResult:
 
         with socket.create_connection(
             (hostname, 443),
-            timeout=CHECK_TIMEOUT_SECONDS,
+            timeout=request_timeout_seconds,
         ) as connection:
             with context.wrap_socket(
                 connection,

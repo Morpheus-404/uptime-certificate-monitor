@@ -2,9 +2,11 @@ import json
 import urllib.request
 from urllib.error import HTTPError, URLError
 
-from monitor.checks import CHECK_TIMEOUT_SECONDS, CheckResult
+from monitor.checks import CheckResult
 from monitor.logger import logger
 
+
+NOTIFICATION_TIMEOUT_SECONDS = 10.0
 
 
 def build_failure_message(
@@ -41,7 +43,7 @@ def send_discord_notification(
     try:
         with urllib.request.urlopen(
             request,
-            timeout=CHECK_TIMEOUT_SECONDS,
+            timeout=NOTIFICATION_TIMEOUT_SECONDS,
         ):
             pass
 

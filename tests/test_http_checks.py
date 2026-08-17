@@ -1,8 +1,9 @@
 from unittest.mock import patch
 from urllib.error import HTTPError, URLError
 
+from monitor.checks import run_http_check
 from monitor.config import HttpCheckConfig
-from monitor.checks import run_http_check, CHECK_TIMEOUT_SECONDS
+
 
 
 class FakeResponse:
@@ -24,7 +25,7 @@ def test_run_http_check_returns_success_for_status_200() -> None:
         "monitor.checks.urllib.request.urlopen",
         return_value=FakeResponse(200),
     ):
-        result = run_http_check(config)
+        result = run_http_check(config, 8.5)
 
     assert result.success is True
     assert result.message == "HTTP status for https://example.com: 200"
@@ -45,7 +46,7 @@ def test_run_http_check_returns_failure_for_status_500() -> None:
         "monitor.checks.urllib.request.urlopen",
          side_effect=error
     ):
-        result = run_http_check(config)
+        result = run_http_check(config, 8.5)
 
     assert result.success is False
     assert result.message == (
@@ -65,7 +66,7 @@ def test_run_http_check_returns_failure_for_url_error() -> None:
         "monitor.checks.urllib.request.urlopen",
         side_effect=error
     ):
-        result = run_http_check(config)
+        result = run_http_check(config, 8.5)
 
     assert result.success is False
     assert result.message == (
@@ -76,13 +77,13 @@ def test_run_http_check_returns_failure_for_url_error() -> None:
 
 def test_run_http_check_returns_failure_for_blank_url() -> None:
     config = HttpCheckConfig(url="    ")
-    result = run_http_check(config)
+    result = run_http_check(config, 8.5)
 
     assert result.success is False
     assert result.message == "HTTP check failed: URL is empty"
 
 
-def test_run_http_check_strips_whitespace_from_url() -> None:
+def test_run_http_check_strips_whitespace_from_url_and_uses_configured_timeout() -> None:
     config = HttpCheckConfig(url="   https://example.com   ")
 
     with patch(
@@ -90,9 +91,9 @@ def test_run_http_check_strips_whitespace_from_url() -> None:
         return_value=FakeResponse(200),
     ) as mock_urlopen:
 
-        run_http_check(config)
+        run_http_check(config, 8.5)
 
         mock_urlopen.assert_called_once_with(
             "https://example.com",
-            timeout=CHECK_TIMEOUT_SECONDS,
+            timeout=8.5,
         )

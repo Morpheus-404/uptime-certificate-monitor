@@ -1,3 +1,5 @@
+request_timeout_seconds: 10.0
+
 checks:
   - type: http
     url: https://example.com
