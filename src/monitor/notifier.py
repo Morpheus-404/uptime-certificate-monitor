@@ -5,7 +5,6 @@ from urllib.error import HTTPError, URLError
 from monitor.checks import CheckResult
 from monitor.logger import logger
 
-
 NOTIFICATION_TIMEOUT_SECONDS = 10.0
 
 

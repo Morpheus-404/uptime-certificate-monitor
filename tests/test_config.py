@@ -84,5 +84,8 @@ checks:
         encoding="utf-8",
     )
 
-    with pytest.raises(ValueError, match="request_timeout_seconds must be greater than 0"):
+    with pytest.raises(
+      ValueError,
+      match="request_timeout_seconds must be greater than 0",
+    ):
         load_config(config_file)

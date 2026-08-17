@@ -1,12 +1,11 @@
-import urllib.request
 import socket
 import ssl
+import urllib.request
 from dataclasses import dataclass
-from datetime import datetime, UTC
-from urllib.error import URLError, HTTPError
+from datetime import UTC, datetime
+from urllib.error import HTTPError, URLError
 
 from monitor.config import HttpCheckConfig, SslCheckConfig
-
 
 
 @dataclass

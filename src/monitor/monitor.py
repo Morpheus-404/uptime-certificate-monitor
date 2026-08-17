@@ -2,7 +2,6 @@ from monitor.checks import CheckResult, run_http_check, run_ssl_check
 from monitor.config import Config, HttpCheckConfig, SslCheckConfig
 
 
-
 def run_checks(config: Config) -> list[CheckResult]:
     results: list[CheckResult] = []
 

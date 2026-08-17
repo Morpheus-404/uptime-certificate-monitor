@@ -8,7 +8,6 @@ import pytest
 from monitor.checks import run_ssl_check
 from monitor.config import SslCheckConfig
 
-
 TEST_TIMEOUT_SECONDS = 8.5
 
 

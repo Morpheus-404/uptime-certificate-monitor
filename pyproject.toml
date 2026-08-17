@@ -40,4 +40,16 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0,<9.0",
+    "ruff>=0.16.3,<0.17",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
 ]

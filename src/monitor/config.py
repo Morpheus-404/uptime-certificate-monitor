@@ -3,6 +3,7 @@ from pathlib import Path
 
 import yaml
 
+
 @dataclass
 class HttpCheckConfig:
     url: str

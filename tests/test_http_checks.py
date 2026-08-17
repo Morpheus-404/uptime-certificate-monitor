@@ -5,7 +5,6 @@ from monitor.checks import run_http_check
 from monitor.config import HttpCheckConfig
 
 
-
 class FakeResponse:
     def __init__(self, status: int):
         self.status = status
@@ -83,7 +82,7 @@ def test_run_http_check_returns_failure_for_blank_url() -> None:
     assert result.message == "HTTP check failed: URL is empty"
 
 
-def test_run_http_check_strips_whitespace_from_url_and_uses_configured_timeout() -> None:
+def test_run_http_check_strips_url_and_uses_configured_timeout() -> None:
     config = HttpCheckConfig(url="   https://example.com   ")
 
     with patch(
