@@ -1,3 +1,0 @@
-# One URL per line
-# Example:
-# https://example.com

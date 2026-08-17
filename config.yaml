@@ -7,5 +7,3 @@ checks:
   - type: ssl
     hostname: example.com
 
-  - type: ssl
-    hostname: example32034.com
