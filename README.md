@@ -1,6 +1,6 @@
 # Uptime Certificate Monitor
 
-A lightweight uptime and SSL certificate monitoring tool built with **Python**, **Docker**, and **Kubernetes**.
+A lightweight uptime and SSL certificate monitoring tool built with **Python**, **Docker**.
 
 This project is part of my software engineering portfolio. It focuses on clean architecture, modern Python packaging, automated testing, and containerized deployment while solving a practical monitoring problem.
 
@@ -22,13 +22,13 @@ The primary goal of this project is to demonstrate practical DevOps and software
 * Discord webhook notifications
 * Structured console logging
 * Automated testing with Pytest
+* Code linting with Ruff
 * Docker containerization
 * Docker Compose support
 
 ## Planned
 
 * Slack webhook notifications
-* Kubernetes CronJob deployment
 * Continuous Integration with GitHub Actions
 
 ---
@@ -39,13 +39,12 @@ The primary goal of this project is to demonstrate practical DevOps and software
 * **Docker**
 * **Docker Compose**
 * **Pytest**
+* **Ruff**
 * **PyYAML**
 
 Planned:
 
-* **Kubernetes (kind)**
 * **GitHub Actions**
-* **Ruff**
 
 ---
 
@@ -53,14 +52,17 @@ Planned:
 
 ```text
 .
+├── .github/
+│   └── workflows/
+│       └── ci.yml       Continuous Integration workflow
 ├── src/
-│   └── monitor/        Application source code
-├── tests/              Unit tests
-├── config.yaml         Monitoring configuration
-├── compose.yaml        Local container configuration
-├── Dockerfile          Container image definition
-├── .env.example        Environment variable template
-└── pyproject.toml      Python project configuration
+│   └── monitor/         Application source code
+├── tests/               Unit tests
+├── config.yaml          Monitoring configuration
+├── compose.yaml         Local container configuration
+├── Dockerfile           Container image definition
+├── .env.example         Environment variable template
+└── pyproject.toml       Python project configuration
 ```
 
 ---
@@ -111,6 +113,12 @@ Install the project with development dependencies:
 pip install -e ".[dev]"
 ```
 
+Run linting:
+
+```bash
+ruff check .
+```
+
 Run the test suite:
 
 ```bash
@@ -126,8 +134,8 @@ This project is intended to demonstrate practical experience with:
 * Python application development
 * Clean project architecture
 * Automated testing
+* Code quality and linting
 * Docker containerization
-* Kubernetes workloads
 * Continuous Integration
 * DevOps best practices
 
