@@ -1,146 +1,186 @@
 # Uptime Certificate Monitor
 
-A lightweight uptime and SSL certificate monitoring tool built with **Python**, **Docker**.
+A lightweight uptime and SSL certificate monitoring tool built with **Python**, **Docker**, and **GitHub Actions**.
 
-This project is part of my software engineering portfolio. It focuses on clean architecture, modern Python packaging, automated testing, and containerized deployment while solving a practical monitoring problem.
+The application monitors configured websites, checks their availability and SSL certificate expiration dates, and optionally sends Discord notifications when issues occur.
 
-The application periodically checks a list of websites, verifies their availability, inspects SSL certificate expiration dates, and reports potential issues.
-The primary goal of this project is to demonstrate practical DevOps and software engineering skills through a clean, production-inspired architecture.
-
+This project is part of my software engineering portfolio and demonstrates automated testing, containerization, scheduled execution, persistent logging, and CI/CD.
 
 ---
 
-# Features
-
-## Implemented
+## Features
 
 * HTTP/HTTPS availability checks
 * SSL certificate expiration monitoring
-* Configurable URL list
-* Configurable request timeout
-* Configurable SSL warning threshold
-* Discord webhook notifications
-* Structured console logging
-* Automated testing with Pytest
+* Configurable targets, timeouts, and warning thresholds
+* Cron-based scheduled monitoring
+* Optional Discord webhook notifications
+* Console and persistent file logging
+* UTC timestamps
+* Automated tests with Pytest
 * Code linting with Ruff
-* Docker containerization
-* Docker Compose support
-
-## Planned
-
-* Slack webhook notifications
-* Continuous Integration with GitHub Actions
+* Docker and Docker Compose support
+* GitHub Actions CI
+* Automated image publishing to GitHub Container Registry
 
 ---
 
-# Tech Stack
+## Tech Stack
 
-* **Python 3.12+**
-* **Docker**
-* **Docker Compose**
-* **Pytest**
-* **Ruff**
-* **PyYAML**
-
-Planned:
-
-* **GitHub Actions**
+**Python 3.12+ · Docker · Docker Compose · GitHub Actions · Pytest · Ruff · PyYAML · croniter**
 
 ---
 
-# Project Structure
+## Configuration
 
-```text
-.
-├── .github/
-│   └── workflows/
-│       └── ci.yml       Continuous Integration workflow
-├── src/
-│   └── monitor/         Application source code
-├── tests/               Unit tests
-├── config.yaml          Monitoring configuration
-├── compose.yaml         Local container configuration
-├── Dockerfile           Container image definition
-├── .env.example         Environment variable template
-└── pyproject.toml       Python project configuration
+Monitoring targets are configured in `config.yaml`:
+
+```yaml id="92m2j8"
+request_timeout_seconds: 10.0
+
+checks:
+  - type: http
+    url: https://example.com
+
+  - type: ssl
+    hostname: example.com
 ```
 
----
+Runtime settings are configured through a local `.env` file based on `.env.example`:
 
-# Configuration
-
-Monitoring targets and check settings are configured in `config.yaml`.
-
-Discord notifications use the `DISCORD_WEBHOOK_URL` environment variable.
-
-Create a local `.env` file based on `.env.example`:
-
-```text
+```dotenv id="wh02ie"
 DISCORD_WEBHOOK_URL=your_discord_webhook_url
+CRON_SCHEDULE=*/15 * * * *
 ```
 
-The `.env` file may contain secrets and must not be committed to version control.
+Discord notifications are optional. `CRON_SCHEDULE` uses standard cron syntax and UTC. If it is not set, the scheduler defaults to every 15 minutes and logs a warning.
+
+The `.env` file may contain secrets and must not be committed.
 
 ---
 
-# Running with Docker Compose
+## Quick Start
 
-Build and run the monitor with:
+### Scheduled monitoring with Docker Compose
 
-```bash
-docker compose run --rm monitor
+Clone the repository, configure `config.yaml` and `.env`, then start the monitor:
+
+```bash id="82fghs"
+docker compose up --build -d
 ```
 
-Docker Compose:
+Check its status:
 
-* builds the application image
-* mounts `config.yaml` into the container as read-only
-* provides `DISCORD_WEBHOOK_URL` from the local environment configuration
-* removes the container after the monitoring run completes
+```bash id="f5xx08"
+docker compose ps
+```
 
-The application exits with:
+Follow the logs:
 
-* `0` if all monitoring checks succeed
-* `1` if one or more checks fail
+```bash id="xsy9dr"
+docker compose logs -f
+```
+
+Stop the monitor:
+
+```bash id="c9z5pc"
+docker compose down
+```
+
+Monitoring results are also persisted in:
+
+```text id="d1aukm"
+logs/monitor.log
+```
+
+The log directory is mounted from the host and therefore survives container restarts.
+
+### Single monitoring run
+
+A prebuilt image is available from GitHub Container Registry:
+
+```bash id="l8y0ai"
+docker pull ghcr.io/morpheus-404/uptime-certificate-monitor:latest
+```
+
+Linux / macOS:
+
+```bash id="jqbfz6"
+docker run --rm \
+  --mount type=bind,source="$(pwd)/config.yaml",target=/app/config.yaml,readonly \
+  ghcr.io/morpheus-404/uptime-certificate-monitor:latest
+```
+
+Windows PowerShell:
+
+```powershell id="rnh5gm"
+docker run --rm `
+  --mount type=bind,source="${PWD}\config.yaml",target=/app/config.yaml,readonly `
+  ghcr.io/morpheus-404/uptime-certificate-monitor:latest
+```
+
+A single run exits with code `0` when all checks succeed and `1` when one or more checks fail.
 
 ---
 
-# Development
+## Development
 
 Install the project with development dependencies:
 
-```bash
-pip install -e ".[dev]"
+```bash id="ozk7zm"
+python -m pip install -e ".[dev]"
 ```
 
-Run linting:
+Run quality checks:
 
-```bash
+```bash id="24jzy1"
 ruff check .
-```
-
-Run the test suite:
-
-```bash
 pytest
 ```
 
----
+Run locally:
 
-# Project Goals
+```bash id="kvn7iw"
+python -m monitor.main
+```
 
-This project is intended to demonstrate practical experience with:
+Or start the scheduler:
 
-* Python application development
-* Clean project architecture
-* Automated testing
-* Code quality and linting
-* Docker containerization
-* Continuous Integration
-* DevOps best practices
+```bash id="l4hpij"
+python -m monitor.scheduler
+```
 
 ---
 
-# License
+## CI/CD
+
+GitHub Actions runs on pushes and pull requests targeting `master`.
+
+The pipeline:
+
+* runs Ruff
+* runs the Pytest test suite
+* validates the Docker build
+* publishes `ghcr.io/morpheus-404/uptime-certificate-monitor:latest` on pushes to `master`
+
+---
+
+## Project Structure
+
+```text id="1ok6o8"
+.
+├── .github/workflows/   CI/CD
+├── src/monitor/         Application source code
+├── tests/               Unit tests
+├── logs/                Persistent runtime logs
+├── config.yaml          Monitoring configuration
+├── compose.yaml         Docker Compose configuration
+├── Dockerfile
+└── pyproject.toml
+```
+
+---
+
+## License
 
 This project is licensed under the **MIT License**.
