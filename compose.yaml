@@ -5,5 +5,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./config.yaml:/app/config.yaml:ro
+      - ./logs:/app/logs
     environment:
       - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
+      - CRON_SCHEDULE=${CRON_SCHEDULE}
+
+    command: python -m monitor.scheduler
