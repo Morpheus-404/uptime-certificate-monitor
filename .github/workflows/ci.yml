@@ -30,3 +30,14 @@ jobs:
 
       - name: Run tests
         run: pytest
+
+  docker:
+    name: Docker build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Build Docker image
+        run: docker build -t uptime-certificate-monitor .
