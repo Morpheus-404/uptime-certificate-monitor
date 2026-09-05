@@ -35,7 +35,7 @@ This project is part of my software engineering portfolio and demonstrates autom
 
 Monitoring targets are configured in `config.yaml`:
 
-```yaml id="92m2j8"
+```yaml
 request_timeout_seconds: 10.0
 
 checks:
@@ -48,7 +48,7 @@ checks:
 
 Runtime settings are configured through a local `.env` file based on `.env.example`:
 
-```dotenv id="wh02ie"
+```dotenv
 DISCORD_WEBHOOK_URL=your_discord_webhook_url
 CRON_SCHEDULE=*/15 * * * *
 ```
@@ -65,31 +65,31 @@ The `.env` file may contain secrets and must not be committed.
 
 Clone the repository, configure `config.yaml` and `.env`, then start the monitor:
 
-```bash id="82fghs"
+```bash
 docker compose up --build -d
 ```
 
 Check its status:
 
-```bash id="f5xx08"
+```bash
 docker compose ps
 ```
 
 Follow the logs:
 
-```bash id="xsy9dr"
+```bash
 docker compose logs -f
 ```
 
 Stop the monitor:
 
-```bash id="c9z5pc"
+```bash
 docker compose down
 ```
 
 Monitoring results are also persisted in:
 
-```text id="d1aukm"
+```text
 logs/monitor.log
 ```
 
@@ -99,13 +99,13 @@ The log directory is mounted from the host and therefore survives container rest
 
 A prebuilt image is available from GitHub Container Registry:
 
-```bash id="l8y0ai"
+```bash
 docker pull ghcr.io/morpheus-404/uptime-certificate-monitor:latest
 ```
 
 Linux / macOS:
 
-```bash id="jqbfz6"
+```bash
 docker run --rm \
   --mount type=bind,source="$(pwd)/config.yaml",target=/app/config.yaml,readonly \
   ghcr.io/morpheus-404/uptime-certificate-monitor:latest
@@ -113,7 +113,7 @@ docker run --rm \
 
 Windows PowerShell:
 
-```powershell id="rnh5gm"
+```powershell
 docker run --rm `
   --mount type=bind,source="${PWD}\config.yaml",target=/app/config.yaml,readonly `
   ghcr.io/morpheus-404/uptime-certificate-monitor:latest
@@ -127,26 +127,26 @@ A single run exits with code `0` when all checks succeed and `1` when one or mor
 
 Install the project with development dependencies:
 
-```bash id="ozk7zm"
+```bash
 python -m pip install -e ".[dev]"
 ```
 
 Run quality checks:
 
-```bash id="24jzy1"
+```bash
 ruff check .
 pytest
 ```
 
 Run locally:
 
-```bash id="kvn7iw"
+```bash
 python -m monitor.main
 ```
 
 Or start the scheduler:
 
-```bash id="l4hpij"
+```bash
 python -m monitor.scheduler
 ```
 
@@ -167,7 +167,7 @@ The pipeline:
 
 ## Project Structure
 
-```text id="1ok6o8"
+```text
 .
 ├── .github/workflows/   CI/CD
 ├── src/monitor/         Application source code
